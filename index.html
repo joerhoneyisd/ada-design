@@ -1,0 +1,1305 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADA Looks, Round 2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,700;112,800&family=Atkinson+Hyperlegible+Next:wght@200..800&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Hanken+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Public+Sans:wght@400;700;800&display=swap">
+<style>
+/* Layout: one reading column; timing switch + tabs; each direction = 2x2 grid of 16:9 video frames, then its system. */
+:root {
+  --bg: #f6f7f9; --fg: #16202e; --muted: #566476; --rule: #d9dee6;
+  --tab-on: #16202e; --tab-on-fg: #ffffff; --chip: #e9edf2;
+  --font-ui: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161d; --fg: #e8edf3; --muted: #9aa7b6; --rule: #2a333e;
+    --tab-on: #e8edf3; --tab-on-fg: #11161d; --chip: #1d252f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161d; --fg: #e8edf3; --muted: #9aa7b6; --rule: #2a333e;
+  --tab-on: #e8edf3; --tab-on-fg: #11161d; --chip: #1d252f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; line-height: 1.55; }
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 72px;
+}
+header h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 0 0 10px; text-wrap: balance; letter-spacing: -0.01em; }
+header p { margin: 0; color: var(--muted); max-width: 68ch; }
+.notes { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 18px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+.notes li::before { content: "✓ "; color: var(--fg); font-weight: 700; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin: 30px 0 6px; }
+.tabs, .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg { align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+.tabs button, .seg button {
+  font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+  padding: 9px 16px; border: 0; border-radius: 999px; background: var(--chip); color: var(--fg);
+}
+.seg button { font-size: 14px; padding: 7px 13px; }
+.tabs button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--tab-on); color: var(--tab-on-fg); }
+button:focus-visible { outline: 3px solid #3d7bfd; outline-offset: 2px; }
+
+.dir-head { display: grid; gap: 6px; margin: 22px 0 22px; }
+.dir-head h2 { margin: 0; font-size: clamp(24px, 3vw, 32px); line-height: 1.15; }
+.dir-head .idea { margin: 0; max-width: 72ch; }
+.dir-head .tag { color: var(--muted); font-size: 14px; }
+
+.frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 22px; }
+@media (max-width: 760px) { .frames { grid-template-columns: minmax(0, 1fr); } }
+figure { margin: 0; min-width: 0; }
+.frame { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px; background: #000; }
+figcaption { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-top: 9px; font-size: 14px; }
+figcaption b { font-weight: 700; }
+figcaption .cap-text span { color: var(--muted); }
+.btns { display: flex; gap: 6px; flex: none; }
+.btns button {
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 0; background: var(--chip); color: var(--fg); padding: 5px 12px; border-radius: 999px;
+}
+.cap-text { min-width: 0; }
+
+.system { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 40px; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); }
+@media (max-width: 760px) { .system { grid-template-columns: minmax(0, 1fr); } }
+.system h3 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.swatches { display: grid; gap: 10px; }
+.sw { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; }
+.sw i { display: block; height: 44px; border-radius: 4px; }
+.sw small { display: block; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.contrast { margin-top: 14px; display: grid; gap: 4px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.contrast span { color: var(--muted); }
+.type-spec .disp { font-size: 34px; line-height: 1.1; margin-bottom: 6px; }
+.type-spec p { margin: 0 0 4px; }
+.type-spec small { color: var(--muted); font-size: 13px; }
+.iconrow { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; border-radius: 6px; }
+.iconrow svg { width: 52px; height: 52px; }
+.motion ul { margin: 0; padding-left: 18px; }
+.replay { font: inherit; font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; cursor: pointer; border: 0; background: var(--chip); color: var(--fg); padding: 3px 10px; border-radius: 999px; margin-left: 8px; vertical-align: 1px; }
+.motion li { margin-bottom: 6px; }
+
+/* ===================== VIDEO FRAMES (1920 x 1080, scaled) ===================== */
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; transform: scale(var(--s, 0.3)); overflow: hidden; }
+.stage .abs { position: absolute; }
+.ico { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.ico .solid { fill: currentColor; stroke: none; }
+/* a mask clips its child so the child can slide in from behind an invisible edge */
+.mask { display: block; overflow: hidden; padding-bottom: 0.08em; }
+.mask > * { display: block; }
+
+/* ---- Direction 1: Quarter Turn ---- */
+.d-qt {
+  --q-ground-a: #f4f7fc; --q-ground-b: #eef8f3;
+  --q-ink: #13294b; --q-mute: #3e5573;
+  --q-cobalt: #1e4fa8; --q-teal: #0b7478; --q-green: #237a4f;
+  --q-sun-a: #f6b73c; --q-sun-b: #ee7a4c; --q-white: #ffffff;
+  background: linear-gradient(135deg, var(--q-ground-a), var(--q-ground-b));
+  color: var(--q-ink); font-family: "Atkinson Hyperlegible Next", Arial, sans-serif;
+}
+.d-qt .disp { font-family: "Archivo", "Arial Black", sans-serif; font-stretch: 112%; font-weight: 800; letter-spacing: -0.01em; line-height: 1.02; }
+.d-qt .eyebrow { font-size: 34px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--q-mute); }
+.q-plane { background: linear-gradient(135deg, var(--q-cobalt), var(--q-teal)); }
+.q-plane-2 { background: linear-gradient(135deg, var(--q-teal), var(--q-green)); }
+.q-sun { background: linear-gradient(135deg, var(--q-sun-a), var(--q-sun-b)); }
+.q-tile { width: 96px; height: 96px; overflow: hidden; }
+.q-tile .layer { position: absolute; inset: 0; }
+.q-tile .num { position: absolute; inset: 0; display: grid; place-items: center; font-size: 46px; color: var(--q-white); }
+.q-label { font-size: 40px; font-weight: 600; color: var(--q-ink); white-space: nowrap; }
+.d-qt.dark { background: linear-gradient(135deg, #13294b 10%, var(--q-teal)); color: var(--q-white); }
+/* a heading that arrives hanging on end, then swings level on its bottom-left corner */
+.d-qt .swing { position: absolute; line-height: 1.1; text-wrap: balance; }
+
+/* ---- Direction 2: Daylight ---- */
+.d-day {
+  --d-ink: #fff7ea; --d-mute: #c9d6e3; --d-sun: #ffc56b; --d-rule: rgba(255, 247, 234, 0.2);
+  color: var(--d-ink); font-family: "Atkinson Hyperlegible Next", Arial, sans-serif;
+}
+.d-day .disp { font-family: "Fraunces", Georgia, serif; font-weight: 600; line-height: 1.02; letter-spacing: -0.01em; }
+.d-day .gate { height: 3px; background: var(--d-sun); transform-origin: 0% 50%; }
+.d-day .hair { height: 1px; background: var(--d-rule); }
+
+/* ---- Direction 3: Focus ---- */
+.d-focus {
+  --f-ground-a: #f2f7ff; --f-ground-b: #fff3ea;
+  --f-ink: #1a1f36; --f-mute: #4a5170; --f-blue: #3249c9; --f-green: #0b7d6e;
+  --f-warm-a: #ffbe5c; --f-warm-b: #f2795b; --f-warm-text: #b4441f;
+  --f-white: #ffffff; --f-line: rgba(26, 31, 54, 0.25);
+  background: linear-gradient(160deg, var(--f-ground-a), var(--f-ground-b));
+  color: var(--f-ink); font-family: "Public Sans", Arial, sans-serif;
+}
+.d-focus .disp { font-weight: 800; letter-spacing: -0.02em; line-height: 1.02; }
+.d-focus .mono { font-family: "IBM Plex Mono", "Courier New", monospace; }
+.f-lozenge { position: absolute; border-radius: 10px; background: linear-gradient(120deg, var(--f-blue), var(--f-green)); transform-origin: 0 50%; }
+.f-item { position: absolute; padding: 14px 24px; border-radius: 10px; color: var(--f-ink); }
+.f-rule { position: absolute; left: 150px; width: 1620px; top: 948px; height: 1px; background: var(--f-line); transform-origin: 0 50%; }
+.f-say { position: absolute; left: 150px; top: 970px; font-size: 32px; color: var(--f-mute); white-space: nowrap; }
+.f-say b { color: var(--f-warm-text); font-weight: 600; }
+.f-key {
+  position: absolute; padding: 10px 22px; border-radius: 8px;
+  background: linear-gradient(120deg, var(--f-warm-a), var(--f-warm-b));
+  font-size: 32px; font-weight: 600; color: var(--f-ink);
+}
+.f-panel { position: absolute; inset: 0; background: linear-gradient(135deg, var(--f-blue), var(--f-green)); }
+</style>
+
+<!-- ICONS are built in the script (IC): each one is a list of parts that draw or slide in one at a time. No two lines cross or touch. -->
+
+<div class="wrap">
+  <header>
+    <h1>ADA series: three new looks</h1>
+    <p>Each direction is shown as four real 1920 × 1080 frames from the script: the series title card, the roadmap, a section title and the deadline. <b>In</b> plays a frame's entrance, <b>Out</b> plays its exit.</p>
+    <ul class="notes" aria-label="Motion rules applied to all three">
+      <li>Things slide on and off; no fades</li>
+      <li>One move at a time</li>
+      <li>Horizontal and vertical are separate moves</li>
+      <li>Lines and boxes slide or grow, never both at once</li>
+      <li>Boxes never turn; text may turn 90° on a corner, never over other text</li>
+      <li>Icons draw themselves, one part at a time</li>
+      <li>No bounce</li>
+    </ul>
+  </header>
+
+  <div class="controls">
+    <div class="tabs" role="tablist" aria-label="Design directions">
+      <button role="tab" id="tab-quarter" aria-controls="p-quarter" aria-selected="true">1 · Semaphore</button>
+      <button role="tab" id="tab-daylight" aria-controls="p-daylight" aria-selected="false">2 · Daylight</button>
+      <button role="tab" id="tab-focus" aria-controls="p-focus" aria-selected="false">3 · Focus</button>
+    </div>
+    <div class="seg" role="group" aria-label="Timing">
+      <span>Timing</span>
+      <button id="ease-expo" aria-pressed="true">Exaggerated</button>
+      <button id="ease-linear" aria-pressed="false">Linear</button>
+    </div>
+  </div>
+
+  <!-- ======================================== 1. SEMAPHORE ======================================== -->
+  <section id="p-quarter" role="tabpanel" aria-labelledby="tab-quarter">
+    <div class="dir-head">
+      <h2>Semaphore</h2>
+      <p class="idea">Named after railway signal arms. Each heading wraps into short lines, arrives hanging on end, reading downward, then swings 90° up on its bottom-left corner to lie level and read, like a signal arm raised to "go". Colour blocks never turn: they grow up from a baseline or out from an edge. Icons draw themselves part by part. The frame is built like a machine, one part at a time.</p>
+      <span class="tag">Light ground · Archivo Expanded + Atkinson Hyperlegible · cobalt → teal against marigold → coral</span>
+    </div>
+    <div class="frames">
+      <figure>
+        <div class="frame"><div class="stage d-qt" data-build="qTitle">
+          <div class="abs q-plane" data-k="sq" style="left:150px;top:300px;width:380px;height:380px;overflow:hidden">
+            <img class="abs" data-k="seal" src="seal320.png" alt="" style="left:80px;top:80px;width:220px;height:220px">
+          </div>
+          <div class="abs q-sun" data-k="sun" style="left:530px;top:570px;width:110px;height:110px"></div>
+          <span class="abs mask" style="left:860px;top:250px"><span class="eyebrow" data-k="eyebrow">Video 1 · Introduction</span></span>
+          <div class="swing disp" data-k="head" style="left:860px;top:318px;font-size:84px;max-width:760px">ADA Digital Accessibility Series</div>
+          <span class="abs mask" style="left:860px;top:624px"><span data-k="sub1" style="font-size:44px;font-weight:700;color:var(--q-cobalt)">Video 1: Introduction</span></span>
+          <span class="abs mask" style="left:860px;top:692px"><span data-k="sub2" style="font-size:36px;color:var(--q-mute)">For all LA County departments</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 2 · Title card.</b> <span>The block grows up and the seal rises inside it; the heading arrives on end and swings level; the sub-lines rise; the marigold tile grows out from the block.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-qt" data-build="qRoad">
+          <div class="swing disp" data-k="title" style="left:150px;top:110px;font-size:76px">In this video</div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 3 · Roadmap.</b> <span>Each tile grows up and its label slides out from behind it; when an item is named, marigold sweeps across its tile; the label stays put.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-qt" data-build="qCards">
+          <span class="abs mask" style="left:150px;top:100px"><span class="eyebrow" data-k="eyebrow">How residents use the web</span></span>
+          <div class="swing disp" data-k="head" style="left:150px;top:160px;font-size:64px;max-width:860px">Not everyone uses a screen the same way</div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 1 · Cards.</b> <span>Each card grows up, its icon draws itself and its label rises; as each way is named, marigold sweeps across that card.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-qt" data-build="qSearch">
+          <div class="abs" data-k="page" style="left:150px;top:110px;width:1620px;height:860px;background:#fff"></div>
+          <div class="abs q-plane" data-k="bar" style="left:150px;top:110px;width:1620px;height:84px"></div>
+          <span class="abs mask" style="left:200px;top:130px"><span data-k="url" style="font-size:32px;color:#fff;font-weight:600">lacounty.gov / services</span></span>
+          <span class="abs mask" style="left:230px;top:248px"><span class="disp" data-k="h" style="font-size:64px">Find a County service</span></span>
+          <div class="abs" data-k="field" style="left:230px;top:370px;width:1060px;height:110px;background:#eef3fa"></div>
+          <div class="abs" data-k="uline" style="left:230px;top:476px;width:1060px;height:4px;background:var(--q-cobalt)"></div>
+          <div class="abs q-sun" data-k="ufocus" style="left:230px;top:474px;width:1060px;height:6px"></div>
+          <svg class="abs ico" data-icon="magnifier" data-k="mag" style="left:262px;top:397px;width:56px;height:56px;color:var(--q-ink)"></svg>
+          <span class="abs mask" style="left:350px;top:398px"><span data-k="ph" style="font-size:40px;color:#5d6f88">Search County services</span></span>
+          <span class="abs" data-k="typed" style="left:350px;top:398px;font-size:40px;color:var(--q-ink);white-space:pre;padding-bottom:0.08em"></span>
+          <div class="abs q-sun" data-k="btn" style="left:1320px;top:370px;width:300px;height:110px;overflow:hidden"><span class="mask" style="position:absolute;inset:0;padding:0"><span class="disp" data-k="btnl" style="display:grid;place-items:center;height:100%;font-size:40px;color:var(--q-ink)">Search</span></span></div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 1 · Graphics.</b> <span>The page grows down, the field grows across and its magnifier draws itself; the cursor travels straight to the field and clicks; the query types in; a second click brings the results.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-qt dark" data-build="qSection">
+          <div class="abs q-sun" data-k="blk" style="left:1370px;top:340px;width:400px;height:400px;overflow:hidden">
+            <span class="mask" style="position:absolute;inset:0;padding:0"><span data-k="n" class="disp" style="display:grid;place-items:center;height:100%;font-size:300px;color:var(--q-ink)">1</span></span>
+          </div>
+          <span class="abs mask" style="left:300px;top:300px"><span class="eyebrow" data-k="eyebrow" style="color:var(--q-sun-a)">Section 1</span></span>
+          <div class="swing disp" data-k="head" style="left:300px;top:370px;font-size:92px;max-width:740px">Why accessibility matters</div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 4 · Section title.</b> <span>The block grows up and the numeral rises inside it; the heading arrives on end and swings level; the label slides in above it.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-qt" data-build="qDeadline">
+          <span class="abs mask" style="left:150px;top:110px"><span class="eyebrow" data-k="eyebrow">The date to remember</span></span>
+          <div class="swing disp" data-k="head" style="left:150px;top:170px;font-size:62px;max-width:760px">One County-wide completion deadline</div>
+          <div class="abs" data-k="base" style="left:150px;top:822px;width:1620px;height:2px;background:var(--q-mute);opacity:.45;transform-origin:0 50%"></div>
+          <div class="abs q-plane-2" data-k="p0" style="left:150px;top:710px;width:110px;height:110px"><svg class="ico" data-icon="check" data-k="c0" style="position:absolute;left:23px;top:23px;width:64px;height:64px;color:#fff"></svg></div>
+          <div class="abs q-plane-2" data-k="p1" style="left:310px;top:710px;width:110px;height:110px"><svg class="ico" data-icon="check" data-k="c1" style="position:absolute;left:23px;top:23px;width:64px;height:64px;color:#fff"></svg></div>
+          <div class="abs q-plane-2" data-k="p2" style="left:470px;top:710px;width:110px;height:110px"><svg class="ico" data-icon="check" data-k="c2" style="position:absolute;left:23px;top:23px;width:64px;height:64px;color:#fff"></svg></div>
+          <div class="abs q-plane-2" data-k="p3" style="left:630px;top:710px;width:110px;height:110px"><svg class="ico" data-icon="check" data-k="c3" style="position:absolute;left:23px;top:23px;width:64px;height:64px;color:#fff"></svg></div>
+          <span class="abs mask" style="left:150px;top:850px"><span data-k="earlier" style="font-size:34px;color:var(--q-mute)">Earlier phases: an established program</span></span>
+          <div class="abs q-sun" data-k="big" style="left:960px;top:480px;width:340px;height:340px;overflow:hidden">
+            <div class="disp" style="position:absolute;left:34px;top:50px;color:var(--q-ink)">
+              <span class="mask"><span data-k="d1" style="font-size:62px">April 26</span></span>
+              <span class="mask" style="margin-top:4px"><span data-k="d2" style="font-size:108px">2027</span></span>
+            </div>
+          </div>
+          <div class="abs" style="left:1350px;top:500px;width:420px">
+            <div style="display:flex;align-items:center;gap:16px"><svg class="ico" data-icon="flag" data-k="flag" style="width:66px;height:66px;flex:none"></svg><span class="mask"><span data-k="dl" style="font-size:50px;font-weight:700">Deadline</span></span></div>
+            <span class="mask" style="margin-top:18px"><span data-k="final" style="font-size:36px;color:var(--q-mute);line-height:1.25">Final phase of an established program</span></span>
+          </div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 9 · Deadline.</b> <span>The heading swings level first; the line grows, phase tiles grow up and their checks draw themselves; the date block grows up from the line and the flag builds itself.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+    </div>
+
+    <div class="system">
+      <div>
+        <h3>Colour</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:linear-gradient(135deg,#1e4fa8,#0b7478)"></i><div><b>Cobalt → teal</b><small>#1E4FA8 → #0B7478 · main blocks</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(135deg,#0b7478,#237a4f)"></i><div><b>Teal → green</b><small>#0B7478 → #237A4F · done, checked</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(135deg,#f6b73c,#ee7a4c)"></i><div><b>Marigold → coral</b><small>#F6B73C → #EE7A4C · the highlight, the date</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(135deg,#f4f7fc,#eef8f3)"></i><div><b>Sky → mint ground</b><small>#F4F7FC → #EEF8F3 · background</small></div></div>
+        </div>
+        <div class="contrast" data-pairs='[["White on teal end","#ffffff","#0b7478"],["White on green end","#ffffff","#237a4f"],["Navy on coral end","#13294b","#ee7a4c"],["Grey-blue text on mint","#3e5573","#eef8f3"]]'></div>
+      </div>
+      <div>
+        <h3>Type</h3>
+        <div class="type-spec">
+          <div class="disp" style="font-family:'Archivo',sans-serif;font-stretch:112%;font-weight:800">Why accessibility matters</div>
+          <p style="font-family:'Atkinson Hyperlegible Next',sans-serif;font-size:18px">Some use a screen reader that speaks the page aloud.</p>
+          <small>Archivo in its wide cut for headlines: square, engineered and calm. Atkinson Hyperlegible Next (designed by the Braille Institute for low-vision readers) for everything else.</small>
+        </div>
+        <h3 style="margin-top:24px">Icons <button class="replay" data-replay>Draw again</button></h3>
+        <div class="iconrow" style="background:linear-gradient(135deg,#f4f7fc,#eef8f3);color:#13294b" data-icons></div>
+        <h3 style="margin-top:24px">Motion</h3>
+        <div class="motion"><ul>
+          <li>Headings: wrapped to a short measure, they arrive hanging on end, slide up into place, then swing 90° up on the bottom-left corner to lie level. Only headings turn; labels and body text slide.</li>
+          <li>A heading swings before anything above it appears, so it never crosses other text.</li>
+          <li>Blocks never turn: they grow up from a baseline or out from an edge. Lines only grow in length.</li>
+          <li>Highlight: marigold grows across the tile, then sweeps away to the right. Labels slide out once and stay put.</li>
+          <li>Icons draw themselves part by part: lines grow, then attached parts slide out from behind them, like the flag.</li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== 2. DAYLIGHT ======================================== -->
+  <section id="p-daylight" role="tabpanel" aria-labelledby="tab-daylight" hidden>
+    <div class="dir-head">
+      <h2>Daylight</h2>
+      <p class="idea">Los Angeles light. Every scene sits on a sky gradient that shifts hue with the story: night blue into teal for the opening, into pine for the roadmap, into a dusk rust for the deadline. Big warm serif type, hairlines, and one gold line that grows under whatever matters. Nothing turns.</p>
+      <span class="tag">Dark ground · Fraunces + Atkinson Hyperlegible · night → teal, night → dusk</span>
+    </div>
+    <div class="frames">
+      <figure>
+        <div class="frame"><div class="stage d-day" data-build="dTitle" style="background:radial-gradient(900px 600px at 88% 12%, rgba(255,197,107,.16), transparent 70%), linear-gradient(160deg,#0d1c3a 0%,#122f52 50%,#1a5f6a 100%)">
+          <img class="abs" data-k="seal" src="seal320.png" alt="" style="left:150px;top:130px;width:150px;height:150px">
+          <div class="abs disp" style="left:150px;top:370px;font-size:120px">
+            <span class="mask"><span data-k="l1">ADA Digital</span></span>
+            <span class="mask"><span data-k="l2">Accessibility Series</span></span>
+          </div>
+          <div class="abs gate" data-k="gate" style="left:150px;top:658px;width:380px"></div>
+          <span class="abs mask" style="left:150px;top:690px"><span data-k="sub1" style="font-size:50px;font-weight:700;color:var(--d-sun)">Video 1: Introduction</span></span>
+          <span class="abs mask" style="left:150px;top:775px"><span data-k="sub2" style="font-size:38px;color:var(--d-mute)">For all LA County departments</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 2 · Title card.</b> <span>The seal drops in, the title rises line by line, the gold line grows, then the two sub-lines slide in.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-day" data-build="dRoad" style="background:linear-gradient(160deg,#0d1c3a 0%,#173a4b 60%,#1f4b44 100%)">
+          <span class="abs mask" style="left:150px;top:100px"><span class="disp" data-k="title" style="font-size:86px">In this video</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 3 · Roadmap.</b> <span>Each label slides out already bold; one gold marker moves from item to item (down to the next row, or across and then up to the next column), and the item it leaves eases back to regular weight.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+      <figure>
+        <div class="frame"><div class="stage d-day" data-build="dCards" style="background:linear-gradient(160deg,#0d1c3a 0%,#173a4b 60%,#1f4b44 100%)">
+          <span class="abs mask" style="left:150px;top:110px;width:1300px"><span class="disp" data-k="head" style="font-size:84px;text-wrap:balance">Not everyone uses a screen the same way</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 1 · Cards.</b> <span>No boxes: columns divided by hairlines that grow down. Each icon draws itself in gold, and the gold marker steps across to each way as it is named.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-day" data-build="dSearch" style="background:radial-gradient(900px 600px at 88% 12%, rgba(255,197,107,.12), transparent 70%), linear-gradient(160deg,#0d1c3a 0%,#122f52 50%,#1a5f6a 100%)">
+          <span class="abs mask" style="left:150px;top:110px"><span data-k="url" style="font-size:34px;color:var(--d-mute);letter-spacing:.03em">lacounty.gov / services</span></span>
+          <span class="abs mask disp" style="left:150px;top:166px;font-size:96px"><span data-k="h">Find a County service</span></span>
+          <svg class="abs ico" data-icon="magnifier" data-k="mag" style="left:150px;top:350px;width:66px;height:66px;color:var(--d-sun)"></svg>
+          <span class="abs mask" style="left:246px;top:352px"><span data-k="ph" style="font-size:46px;color:var(--d-mute)">Search County services</span></span>
+          <span class="abs" data-k="typed" style="left:246px;top:352px;font-size:46px;white-space:pre;padding-bottom:0.08em"></span>
+          <div class="abs" data-k="uline" style="left:150px;top:440px;width:1150px;height:2px;background:rgba(255,247,234,.45)"></div>
+          <div class="abs" data-k="btn" style="left:1350px;top:338px;width:270px;height:100px;background:var(--d-sun);border-radius:8px;overflow:hidden"><span class="mask" style="position:absolute;inset:0;padding:0"><span class="disp" data-k="btnl" style="display:grid;place-items:center;height:100%;font-size:46px;color:#0d1c3a">Search</span></span></div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 1 · Graphics.</b> <span>The field's line grows; the cursor travels straight to the field and clicks; gold grows along the line as the query types in; after the second click, the gold line drops to the first result.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-day" data-build="dSection" style="background:linear-gradient(150deg,#13294b 0%,#2a3f6b 45%,#9c4a2c 110%)">
+          <span class="abs mask disp" style="left:120px;top:90px;font-size:640px;line-height:1;color:var(--d-sun);padding-bottom:0"><span data-k="n">1</span></span>
+          <span class="abs mask" style="left:640px;top:360px"><span data-k="eyebrow" style="font-size:38px;color:var(--d-mute);letter-spacing:.04em">Section one</span></span>
+          <div class="abs gate" data-k="gate" style="left:640px;top:432px;width:300px"></div>
+          <div class="abs disp" style="left:640px;top:470px;font-size:112px">
+            <span class="mask"><span data-k="l1">Why accessibility</span></span>
+            <span class="mask"><span data-k="l2">matters</span></span>
+          </div>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 4 · Section title.</b> <span>A giant numeral rises, then the label, the gold line and the headline, one after another.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-day" data-build="dDeadline" style="background:linear-gradient(170deg,#0d1c3a 0%,#1e3561 52%,#8e4a35 120%)">
+          <span class="abs mask" style="left:150px;top:180px"><span data-k="eyebrow" style="font-size:40px;color:var(--d-mute)">One County-wide completion deadline</span></span>
+          <span class="abs mask disp" style="left:150px;top:250px;font-size:176px"><span data-k="date">April 26, 2027</span></span>
+          <span class="abs mask" style="left:150px;top:520px"><span data-k="final" style="font-size:40px">Final phase of an established program</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 9 · Deadline.</b> <span>The line grows segment by segment, breaking around each marker; the flag pole grows up, then the flag slides out from it.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+    </div>
+
+    <div class="system">
+      <div>
+        <h3>Colour</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:linear-gradient(160deg,#0d1c3a,#122f52 50%,#1a5f6a)"></i><div><b>Night → teal</b><small>#0D1C3A → #1A5F6A · opening, title</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(160deg,#0d1c3a,#173a4b 60%,#1f4b44)"></i><div><b>Night → pine</b><small>#0D1C3A → #1F4B44 · lists, explainers</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(170deg,#0d1c3a,#1e3561 52%,#8e4a35)"></i><div><b>Night → dusk</b><small>#0D1C3A → #8E4A35 · deadline, urgency</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(90deg,#ffc56b,#fff7ea)"></i><div><b>Sun gold, cream</b><small>#FFC56B, #FFF7EA · the gold line, all type</small></div></div>
+        </div>
+        <div class="contrast" data-pairs='[["Cream on night","#fff7ea","#0d1c3a"],["Cream on dusk end","#fff7ea","#8e4a35"],["Sun gold on night","#ffc56b","#0d1c3a"],["Mist text on teal end","#c9d6e3","#1a5f6a"]]'></div>
+      </div>
+      <div>
+        <h3>Type</h3>
+        <div class="type-spec">
+          <div class="disp" style="font-family:'Fraunces',serif;font-weight:600">Why accessibility matters</div>
+          <p style="font-family:'Atkinson Hyperlegible Next',sans-serif;font-size:18px">Some use a screen reader that speaks the page aloud.</p>
+          <small>Fraunces (a sturdy, warm serif) for headlines and numbers; Atkinson Hyperlegible Next for the rest.</small>
+        </div>
+        <h3 style="margin-top:24px">Icons <button class="replay" data-replay>Draw again</button></h3>
+        <div class="iconrow" style="background:linear-gradient(160deg,#0d1c3a,#1a5f6a);color:#fff7ea" data-icons></div>
+        <h3 style="margin-top:24px">Motion</h3>
+        <div class="motion"><ul>
+          <li>Type rises from behind an invisible edge, one line at a time.</li>
+          <li>The gold line only grows in length, or moves along one axis.</li>
+          <li>Between scenes the sky gradient changes hue; content slides off and on in front of it.</li>
+          <li>Icons draw themselves part by part: lines grow, then attached parts slide out from behind them, like the flag.</li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== 3. FOCUS ======================================== -->
+  <section id="p-focus" role="tabpanel" aria-labelledby="tab-focus" hidden>
+    <div class="dir-head">
+      <h2>Focus</h2>
+      <p class="idea">The video moves the way a keyboard user moves through a page. A warm Tab key is pressed, and a blue → green highlight jumps to the next item. A quiet line at the bottom reads out what a screen reader would say. The subject of the series becomes its visual language.</p>
+      <span class="tag">Light ground · Public Sans (the U.S. government's typeface) + IBM Plex Mono · blue → green, with a warm amber → coral key</span>
+    </div>
+    <div class="frames">
+      <figure>
+        <div class="frame"><div class="stage d-focus" data-build="fTitle">
+          <img class="abs" data-k="seal" src="seal320.png" alt="" style="left:1640px;top:110px;width:130px;height:130px">
+          <div class="f-lozenge" data-k="loz"></div>
+          <div class="f-item disp" data-k="t1" style="left:126px;top:300px;font-size:108px"><span class="mask"><span data-k="t1a">ADA Digital</span></span><span class="mask"><span data-k="t1b">Accessibility Series</span></span></div>
+          <div class="f-item" data-k="t2" style="left:126px;top:600px;font-size:50px;font-weight:700"><span class="mask"><span data-k="t2a">Video 1: Introduction</span></span></div>
+          <div class="f-item" data-k="t3" style="left:126px;top:690px;font-size:40px"><span class="mask"><span data-k="t3a">For all LA County departments</span></span></div>
+          <div class="f-key mono" data-k="key" style="left:150px;top:130px">Tab ⇥</div>
+          <div class="f-rule" data-k="rule"></div>
+          <span class="f-say mask mono"><span data-k="say"><b>▸</b> heading level 1, ADA Digital Accessibility Series</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 2 · Title card.</b> <span>Lines rise into place; each press of Tab moves the highlight down a line.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-focus" data-build="fRoad">
+          <span class="abs mask" style="left:150px;top:100px"><span class="disp" data-k="title" style="font-size:80px">In this video</span></span>
+          <div class="f-lozenge" data-k="loz"></div>
+          <div class="f-rule" data-k="rule"></div>
+          <span class="f-say mask mono"><span data-k="say"><b>▸</b> list, 8 items</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 3 · Roadmap.</b> <span>Each item slides in from the left; the highlight follows the narrator and the bottom line counts "3 of 8".</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+      <figure>
+        <div class="frame"><div class="stage d-focus" data-build="fCards">
+          <span class="abs mask" style="left:150px;top:110px;width:1300px"><span class="disp" data-k="head" style="font-size:76px;text-wrap:balance">Not everyone uses a screen the same way</span></span>
+          <div class="f-lozenge" data-k="loz"></div>
+          <div class="f-rule" data-k="rule"></div>
+          <span class="f-say mask mono"><span data-k="say"></span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 1 · Cards.</b> <span>Cards are pale fields with no border. Each grows up and its icon draws itself; then focus moves card to card as each way is named.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-focus" data-build="fSearch">
+          <span class="abs mask" style="left:150px;top:110px"><span class="mono" data-k="url" style="font-size:32px;color:var(--f-mute)">lacounty.gov/services</span></span>
+          <span class="abs mask disp" style="left:150px;top:160px;font-size:80px"><span data-k="h">Find a County service</span></span>
+          <div class="abs" data-k="fbg" style="left:150px;top:320px;width:1100px;height:120px;background:rgba(255,255,255,.85);border-radius:10px"></div>
+          <div class="abs" data-k="bbg" style="left:1290px;top:320px;width:300px;height:120px;background:rgba(255,255,255,.85);border-radius:10px"></div>
+          <div class="f-lozenge" data-k="loz"></div>
+          <div class="f-item" data-k="fld" style="left:150px;top:320px;width:1100px;height:120px;padding:0 30px;display:flex;align-items:center;gap:26px">
+            <svg class="ico" data-icon="magnifier" data-k="mag" style="width:60px;height:60px;flex:none"></svg>
+            <span style="position:relative;font-size:44px"><span class="mask"><span data-k="ph" style="color:var(--f-mute)">Search County services</span></span><span data-k="typed" style="position:absolute;left:0;top:0;white-space:pre"></span></span>
+          </div>
+          <div class="f-item" data-k="btn" style="left:1290px;top:320px;width:300px;height:120px;padding:0;display:grid;place-items:center;font-size:44px;font-weight:700"><span class="mask"><span data-k="btnl">Search</span></span></div>
+          <div class="f-key mono" data-k="key" style="left:1600px;top:118px">Tab ⇥</div>
+          <div class="f-rule" data-k="rule"></div>
+          <span class="f-say mask mono"><span data-k="say"></span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 1 · Graphics.</b> <span>A mouse click puts focus in the field and the query types in; Tab moves focus to the button, Enter brings the results, and focus moves to the first one.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-focus" data-build="fSection">
+          <div class="f-panel" data-k="panel"></div>
+          <div class="f-key mono" data-k="key" style="left:1580px;top:120px">Tab ⇥</div>
+          <span class="abs mask" style="left:150px;top:330px"><span class="mono" data-k="eyebrow" style="font-size:38px;color:#fff">Section 1 of 8</span></span>
+          <div class="abs disp" style="left:150px;top:400px;font-size:132px;color:#fff">
+            <span class="mask"><span data-k="l1">Why accessibility</span></span>
+            <span class="mask"><span data-k="l2">matters</span></span>
+          </div>
+          <div class="f-rule" data-k="rule" style="background:rgba(255,255,255,.4)"></div>
+          <span class="f-say mask mono" style="color:#fff"><span data-k="say">region, Section 1. heading level 1, Why accessibility matters</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 4 · Section title.</b> <span>Tab is pressed and the focus colour slides across the whole frame; the headline rises.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="frame"><div class="stage d-focus" data-build="fDeadline">
+          <span class="abs mask" style="left:150px;top:130px"><span class="mono" data-k="eyebrow" style="font-size:34px;color:var(--f-mute)">One County-wide completion deadline</span></span>
+          <div class="f-lozenge" data-k="loz"></div>
+          <div class="f-item" data-k="field" style="left:126px;top:200px;padding:22px 40px 22px 24px"><span class="mask"><span data-k="fieldin" style="display:flex;align-items:center;gap:34px"><svg class="ico" data-icon="calendar" data-k="cal" style="width:110px;height:110px;flex:none"></svg><span class="disp" style="font-size:128px">April 26, 2027</span></span></span></div>
+          <div class="abs" data-k="under" style="left:150px;top:392px;width:1050px;height:2px;background:var(--f-line);transform-origin:0 50%"></div>
+          <span class="abs mask" style="left:150px;top:430px"><span data-k="final" style="font-size:40px;color:var(--f-mute)">Final phase of an established program</span></span>
+          <div class="f-rule" data-k="rule"></div>
+          <span class="f-say mask mono"><span data-k="say"><b>▸</b> step 5 of 5, final phase of an established program</span></span>
+        </div></div>
+        <figcaption><span class="cap-text"><b>Scene 9 · Deadline.</b> <span>The date as a focused form field; phases tick off along a broken line; focus lands on the final, warm flag.</span></span><span class="btns"><button data-act="in">In</button><button data-act="out">Out</button></span></figcaption>
+      </figure>
+    </div>
+
+    <div class="system">
+      <div>
+        <h3>Colour</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:linear-gradient(120deg,#3249c9,#0b7d6e)"></i><div><b>Focus: blue → green</b><small>#3249C9 → #0B7D6E · the highlight, section cards</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(120deg,#ffbe5c,#f2795b)"></i><div><b>Warm: amber → coral</b><small>#FFBE5C → #F2795B · the Tab key, the final step (sparingly)</small></div></div>
+          <div class="sw"><i style="background:linear-gradient(160deg,#f2f7ff,#fff3ea)"></i><div><b>Ice → peach ground</b><small>#F2F7FF → #FFF3EA · background</small></div></div>
+          <div class="sw"><i style="background:#1a1f36"></i><div><b>Ink</b><small>#1A1F36 · text, icons</small></div></div>
+        </div>
+        <div class="contrast" data-pairs='[["White on blue end","#ffffff","#3249c9"],["White on green end","#ffffff","#0b7d6e"],["Ink on coral end","#1a1f36","#f2795b"],["Warm text (rust) on peach","#b4441f","#fff3ea"]]'></div>
+      </div>
+      <div>
+        <h3>Type</h3>
+        <div class="type-spec">
+          <div class="disp" style="font-family:'Public Sans',sans-serif;font-weight:800;letter-spacing:-0.02em">Why accessibility matters</div>
+          <p style="font-family:'IBM Plex Mono',monospace;font-size:16px">heading level 1, Why accessibility matters</p>
+          <small>Public Sans (from the U.S. Web Design System) for everything people read; IBM Plex Mono only for the "what a screen reader says" line.</small>
+        </div>
+        <h3 style="margin-top:24px">Icons <button class="replay" data-replay>Draw again</button></h3>
+        <div class="iconrow" style="background:linear-gradient(160deg,#f2f7ff,#fff3ea);color:#1a1f36" data-icons></div>
+        <h3 style="margin-top:24px">Motion</h3>
+        <div class="motion"><ul>
+          <li>Text rises or slides from behind an invisible edge; it never overlaps another line.</li>
+          <li>The highlight first grows across its item, then glides between items as Tab is pressed.</li>
+          <li>The bottom line can double as on-screen audio description.</li>
+          <li>Icons draw themselves part by part: lines grow, then attached parts slide out from behind them, like the flag.</li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var EASES = { expo: "expo.inOut", linear: "none" };
+  var easeName = "expo";
+  function EASE() { return EASES[easeName]; }
+  var D = 0.5; // one move, seconds (style guide: under 0.6 s)
+
+  /* ---------- scale every 1920x1080 stage to its frame ---------- */
+  function fit(frame) { frame.firstElementChild.style.setProperty("--s", frame.clientWidth / 1920); }
+  var ro = new ResizeObserver(function (es) { es.forEach(function (e) { fit(e.target); }); });
+  document.querySelectorAll(".frame").forEach(function (f) { fit(f); ro.observe(f); });
+
+  /* ---------- icons: each is a list of parts, built one part at a time ----------
+     ["d", svg]                 a line that draws itself along its length
+     ["s", svg, clip, dx, dy]   a part that slides out from behind an invisible edge (the clip),
+                                usually the line it hangs from, like a flag's cloth from its pole */
+  var IC = {
+    heart: [["d", '<path d="M22.5 38C13.5 31.5 7 25.5 7 18.5 7 13 11 9 16 9c3 0 5.6 1.5 7 3.6"/>'],
+            ["d", '<path d="M25.5 38C34.5 31.5 41 25.5 41 18.5 41 13 37 9 32 9c-3 0-5.6 1.5-7 3.6"/>']],
+    calendar: [["d", '<path d="M8 17a4 4 0 0 1 4-4h24a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4Z"/>'],
+               ["d", '<path d="M17 6.5v3"/>'], ["d", '<path d="M31 6.5v3"/>'],
+               ["d", '<path d="M13.5 21h21"/>'],
+               ["s", '<path d="M16 28h.5M23.75 28h.5M31.5 28h.5M16 34h.5M23.75 34h.5"/>', [10, 22.6, 28, 15], 0, -14]],
+    grid: [["d", '<rect x="8" y="8" width="13" height="13" rx="3"/>'], ["d", '<rect x="27" y="8" width="13" height="13" rx="3"/>'],
+           ["d", '<rect x="8" y="27" width="13" height="13" rx="3"/>'], ["d", '<rect x="27" y="27" width="13" height="13" rx="3"/>']],
+    people: [["d", '<circle cx="24" cy="14" r="5"/>'], ["d", '<path d="M15 39c0-6 4-10.5 9-10.5s9 4.5 9 10.5"/>'],
+             ["s", '<circle cx="10" cy="18.5" r="3.5"/><path d="M3.5 35c0-4.5 2.8-7.5 6.5-7.5"/>', [0, 0, 14.6, 48], 15, 0],
+             ["s", '<circle cx="38" cy="18.5" r="3.5"/><path d="M44.5 35c0-4.5-2.8-7.5-6.5-7.5"/>', [33.4, 0, 14.6, 48], -15, 0]],
+    cycle: [["d", '<path d="M10.84 19.21A14 14 0 0 1 34.72 15"/>'],
+            ["s", '<path class="solid" d="M38.2 21.5 33.8 18.6 38.6 15.6Z"/>', [30, 15.3, 14, 10], 0, -8],
+            ["d", '<path d="M37.16 28.79A14 14 0 0 1 13.28 33"/>'],
+            ["s", '<path class="solid" d="M9.8 26.5 14.2 29.4 9.4 32.4Z"/>', [4, 22, 14, 10.7], 0, 8]],
+    toolbox: [["d", '<path d="M7 19a3 3 0 0 1 3-3h28a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3Z"/>'],
+              ["s", '<path d="M18 12.5v-2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/>', [12, 0, 24, 14.6], 0, 8],
+              ["d", '<path d="M12 26.5h7.5"/>'], ["d", '<path d="M36 26.5H28.5"/>'], ["d", '<path d="M24 24.5v4"/>']],
+    bars: [["d", '<path d="M7 41h34"/>'],
+           ["s", '<rect x="10" y="26" width="6" height="10" rx="1.5"/>', [0, 0, 48, 39.4], 0, 16],
+           ["s", '<rect x="21" y="18" width="6" height="18" rx="1.5"/>', [0, 0, 48, 39.4], 0, 24],
+           ["s", '<rect x="32" y="10" width="6" height="26" rx="1.5"/>', [0, 0, 48, 39.4], 0, 32]],
+    checklist: [["d", '<path d="m8 12.5 3 3 6-6"/>'], ["d", '<path d="M22 12.5h18"/>'],
+                ["d", '<path d="m8 24.5 3 3 6-6"/>'], ["d", '<path d="M22 24.5h18"/>'],
+                ["d", '<path d="m8 36.5 3 3 6-6"/>'], ["d", '<path d="M22 36.5h18"/>']],
+    flag: [["d", '<path d="M12 42V7"/>'],
+           ["s", '<path d="M16 9h19l-4.5 6.5L35 22H16Z"/>', [14, 0, 34, 48], -24, 0]],
+    check: [["d", '<circle cx="24" cy="24" r="17"/>'], ["d", '<path d="m16.5 24.5 5 5 10-11"/>']],
+    speaker: [["d", '<path d="M7 19h6.5L23 11.5v25L13.5 29H7Z"/>'],
+              ["s", '<path d="M28.5 18a8.5 8.5 0 0 1 0 12"/>', [25.5, 0, 22.5, 48], -17, 0],
+              ["s", '<path d="M33.5 13a15 15 0 0 1 0 22"/>', [25.5, 0, 22.5, 48], -17, 0]],
+    keyboard: [["d", '<rect x="5" y="13" width="38" height="22" rx="3"/>'],
+               ["s", '<path d="M11 19.5h.5M17.5 19.5h.5M24 19.5h.5M30.5 19.5h.5M37 19.5h.5M11 24.5h.5M17.5 24.5h.5M24 24.5h.5M30.5 24.5h.5M37 24.5h.5"/>', [7, 15, 34, 18], 0, -12],
+               ["d", '<path d="M16 29.5h16"/>']],
+    captions: [["d", '<rect x="5" y="10" width="38" height="28" rx="4"/>'],
+               ["d", '<path d="M11 24h12"/>'], ["d", '<path d="M27 24h10"/>'],
+               ["d", '<path d="M11 30h18"/>'], ["d", '<path d="M33 30h4"/>']],
+    magnifier: [["d", '<circle cx="20" cy="20" r="12"/>'], ["d", '<path d="M31.5 31.5 41 41"/>']],
+    mic: [["d", '<rect x="18" y="5" width="12" height="21" rx="6"/>'],
+          ["d", '<path d="M11 21a13 13 0 0 0 26 0"/>'],
+          ["s", '<path d="M24 37v3.5"/>', [20, 35.6, 8, 12], 0, -8],
+          ["d", '<path d="M18 44.5h12"/>']]
+  };
+  var clipN = 0;
+  // fill an <svg data-icon="name"> with its parts
+  function hydrate(svg) {
+    var parts = IC[svg.getAttribute("data-icon")], defs = "", body = "";
+    svg.setAttribute("viewBox", "0 0 48 48");
+    parts.forEach(function (p) {
+      if (p[0] === "d") {
+        body += p[1].replace(/^<(\w+)/, '<$1 data-ip="d" pathLength="1" style="stroke-dasharray:1 3"');
+      } else {
+        var id = "ic" + (++clipN), c = p[2];
+        defs += '<clipPath id="' + id + '"><rect x="' + c[0] + '" y="' + c[1] + '" width="' + c[2] + '" height="' + c[3] + '"/></clipPath>';
+        body += '<g clip-path="url(#' + id + ')"><g data-ip="s" data-dx="' + p[3] + '" data-dy="' + p[4] + '">' + p[1] + '</g></g>';
+      }
+    });
+    svg.innerHTML = "<defs>" + defs + "</defs>" + body;
+  }
+  function hydrateIn(root) {
+    if (root.matches && root.matches("svg[data-icon]")) hydrate(root);
+    root.querySelectorAll && root.querySelectorAll("svg[data-icon]").forEach(hydrate);
+  }
+  hydrateIn(document);
+  // build an icon part by part, one move each; returns the time it finishes
+  var DI = 0.26, SI = DI + 0.04;
+  function assemble(tl, svg, at) {
+    var t = at;
+    svg.querySelectorAll("[data-ip]").forEach(function (p) {
+      if (p.getAttribute("data-ip") === "d") tl.fromTo(p, { attr: { "stroke-dashoffset": 1.05 } }, { attr: { "stroke-dashoffset": 0 }, duration: DI, ease: EASE() }, t);
+      else tl.fromTo(p, { x: +p.getAttribute("data-dx"), y: +p.getAttribute("data-dy") }, { x: 0, y: 0, duration: DI, ease: EASE() }, t);
+      t += SI;
+    });
+    return t;
+  }
+
+  /* ---------- icon rows in each system block ---------- */
+  var ICONS = ["heart", "calendar", "grid", "people", "cycle", "toolbox", "bars", "checklist", "flag", "check", "speaker", "keyboard", "captions", "magnifier", "mic"];
+  document.querySelectorAll("[data-icons]").forEach(function (row) {
+    row.innerHTML = ICONS.map(function (n) { return '<svg class="ico" data-icon="' + n + '" role="img" aria-label="' + n + ' icon"></svg>'; }).join("");
+    hydrateIn(row);
+  });
+  var rowTl = new Map();
+  function playRow(row, done) {
+    if (!window.gsap) return;
+    if (rowTl.get(row)) rowTl.get(row).progress(1).kill();
+    var tl = gsap.timeline({ paused: true });
+    row.querySelectorAll("svg[data-icon]").forEach(function (svg, i) { assemble(tl, svg, i * 0.18); });
+    rowTl.set(row, tl);
+    if (done) tl.progress(1); else tl.play(0);
+  }
+
+  /* ---------- live contrast ratios ---------- */
+  function lum(hex) {
+    var c = [1, 3, 5].map(function (i) { var v = parseInt(hex.substr(i, 2), 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function ratio(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  document.querySelectorAll("[data-pairs]").forEach(function (box) {
+    box.innerHTML = JSON.parse(box.getAttribute("data-pairs")).map(function (p) {
+      var r = ratio(p[1], p[2]);
+      var pass = r >= 4.5 ? "AA" : r >= 3 ? "AA large text (all video text is 32 px+)" : "decorative only";
+      return "<div>" + p[0] + ": <b>" + r.toFixed(1) + ":1</b> <span>" + pass + "</span></div>";
+    }).join("");
+  });
+
+  /* ---------- helpers ---------- */
+  function q(s, k) { return s.querySelector('[data-k="' + k + '"]'); }
+  function add(s, html) { var d = document.createElement("div"); d.innerHTML = html.trim(); var n = d.firstChild; s.appendChild(n); hydrateIn(n); return n; }
+  // element's box in frame pixels (undoes the preview scale)
+  function rect(s, el) {
+    var sc = s.getBoundingClientRect(), r = el.getBoundingClientRect(), k = sc.width / 1920 || 1;
+    return { l: (r.left - sc.left) / k, t: (r.top - sc.top) / k, r: (r.right - sc.left) / k, b: (r.bottom - sc.top) / k };
+  }
+  // slide in from a frame edge along ONE axis
+  function slideIn(tl, s, el, from, at) {
+    var b = rect(s, el), v = {};
+    if (from === "left") v.x = -(b.r + 40);
+    if (from === "right") v.x = 1920 - b.l + 40;
+    if (from === "top") v.y = -(b.b + 40);
+    if (from === "bottom") v.y = 1080 - b.t + 40;
+    var to = { duration: D, ease: EASE() }; to[v.x != null ? "x" : "y"] = 0;
+    tl.fromTo(el, v, to, at);
+  }
+  // text: rise (or slide sideways) out from behind its mask edge
+  function rise(tl, el, at) { tl.fromTo(el, { yPercent: 110 }, { yPercent: 0, duration: D, ease: EASE() }, at); }
+  function slideMask(tl, el, at) { tl.fromTo(el, { xPercent: -105 }, { xPercent: 0, duration: D, ease: EASE() }, at); }
+  // lines grow in length only; tiles grow in height only
+  function growX(tl, el, at, origin) { tl.fromTo(el, { scaleX: 0, transformOrigin: origin || "0% 50%" }, { scaleX: 1, duration: D, ease: EASE() }, at); }
+  function growY(tl, el, at, origin) { tl.fromTo(el, { scaleY: 0, transformOrigin: origin || "50% 100%" }, { scaleY: 1, duration: D, ease: EASE() }, at); }
+  // headings only: arrive hanging on end (turned 90deg on the bottom-left corner, reading downward), slide up
+  // into place, then swing up to lie level. Nothing below the heading is on screen yet, so it never crosses other text.
+  function swing(tl, s, el, at) {
+    var b = rect(s, el), w = b.r - b.l;
+    tl.set(el, { rotation: 90, transformOrigin: "0% 100%" }, 0);
+    tl.fromTo(el, { y: 1080 - b.b + 40 }, { y: 0, duration: D, ease: EASE() }, at);
+    tl.to(el, { rotation: 0, duration: D, ease: EASE() }, at + STEP);
+    return at + 2 * STEP;
+  }
+  /* ---------- mock-UI helpers: cursor, click, typing ---------- */
+  var CARDS = [["Screen reader", "speaker"], ["Keyboard or switch", "keyboard"], ["Captions", "captions"], ["Magnification", "magnifier"], ["Voice input", "mic"]];
+  var QUERY = "renew a permit";
+  var RESULTS = ["Renew a building permit", "Renew a business license", "Permit renewals: questions and answers"];
+  function addCursor(s, fill, line, tick) {
+    add(s, '<svg class="abs" data-k="tick" viewBox="0 0 60 60" style="left:0;top:0;width:60px;height:60px;overflow:visible;fill:none;stroke:' + tick + ';stroke-width:4;stroke-linecap:round">' +
+      '<path d="M30 19V7" pathLength="1" stroke-dashoffset="1.05" style="stroke-dasharray:1 3"/><path d="M19 30H7" pathLength="1" stroke-dashoffset="1.05" style="stroke-dasharray:1 3"/>' +
+      '<path d="M22.5 22.5 14 14" pathLength="1" stroke-dashoffset="1.05" style="stroke-dasharray:1 3"/></svg>');
+    add(s, '<svg class="abs" data-k="cur" viewBox="0 0 26 36" style="left:0;top:0;width:52px;height:72px;overflow:visible">' +
+      '<path d="M2 2v27l7-6.5 5 11 5-2.2-5-10.8h10Z" fill="' + fill + '" stroke="' + line + '" stroke-width="2" stroke-linejoin="round"/></svg>');
+  }
+  // the cursor tip is 4px in from the svg corner; every move is along ONE axis
+  function cursorAt(tl, s, X, Y) { tl.set(q(s, "cur"), { x: X - 4, y: Y - 4 }, 0); }
+  function cursorTo(tl, s, moves, at) {
+    var t = at;
+    // a mouse pointer travels straight from point to point (the one diagonal move allowed)
+    moves.forEach(function (m) { tl.to(q(s, "cur"), { x: m[0] - 4, y: m[1] - 4, duration: D, ease: EASE() }, t); t += STEP; });
+    return t;
+  }
+  // click: three short lines grow out from the tip, then retract outward
+  function click(tl, s, X, Y, at) {
+    var tk = q(s, "tick"), ps = tk.querySelectorAll("path");
+    tl.set(tk, { left: X - 30, top: Y - 30 }, at);
+    tl.fromTo(ps, { attr: { "stroke-dashoffset": 1.05 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.16, ease: "none" }, at);
+    tl.to(ps, { attr: { "stroke-dashoffset": -1.05 }, duration: 0.16, ease: "none" }, at + 0.22);
+    return at + 0.45;
+  }
+  function typeText(tl, el, text, at) {
+    tl.call(function () { el.textContent = ""; }, null, 0);
+    for (var i = 1; i <= text.length; i++) tl.call(function (k) { el.textContent = text.slice(0, k); }, [i], at + i * 0.06);
+    return at + text.length * 0.06 + 0.15;
+  }
+  var STEP = D + 0.08; // next move starts after the previous one ends
+
+  var ROAD = [
+    ["Why accessibility matters", "heart"], ["The requirement and the deadline", "calendar"],
+    ["What’s in scope", "grid"], ["Who is involved", "people"],
+    ["How compliance work proceeds", "cycle"], ["Tools, training, and support", "toolbox"],
+    ["How progress is reported", "bars"], ["The action plan for executives", "checklist"]
+  ];
+
+  /* ================= BUILDERS (entrances) ================= */
+  var B = {};
+
+  /* ---- 1. Semaphore ---- */
+  B.qTitle = function (s, tl) {
+    var t = 0;
+    growY(tl, q(s, "sq"), t);                                         // block grows up from its base
+    t += STEP; tl.fromTo(q(s, "seal"), { y: 400 }, { y: 0, duration: D, ease: EASE() }, t);
+    t += STEP; t = swing(tl, s, q(s, "head"), t);                      // heading swings level before anything above it appears
+    slideMask(tl, q(s, "eyebrow"), t);
+    t += 0.3; rise(tl, q(s, "sub1"), t);
+    t += 0.3; rise(tl, q(s, "sub2"), t);
+    t += STEP; growX(tl, q(s, "sun"), t);                             // marigold tile grows out from the block's edge
+  };
+  B.qRoad = function (s, tl) {
+    if (!s._built) {
+      ROAD.forEach(function (r, i) {
+        var x = 150 + (i < 4 ? 0 : 860), y = 290 + (i % 4) * 170;
+        add(s, '<div class="abs q-tile" data-k="t' + i + '" style="left:' + x + 'px;top:' + y + 'px">' +
+          '<div class="layer q-plane"></div><div class="layer q-sun" data-k="hot' + i + '" style="transform:scaleX(0)"></div>' +
+          '<span class="mask" style="position:absolute;inset:0;padding:0"><span class="num disp" data-k="n' + i + '">' + (i + 1) + '</span></span></div>');
+        add(s, '<span class="abs mask" style="left:' + (x + 140) + 'px;top:' + (y + 20) + 'px"><span class="q-label" data-k="lab' + i + '">' + r[0] + '</span></span>');
+      });
+      s._built = true;
+    }
+    var t = swing(tl, s, q(s, "title"), 0) - 0.1;
+    ROAD.forEach(function (r, i) {
+      var tile = q(s, "t" + i), hot = q(s, "hot" + i), num = q(s, "n" + i), lab = q(s, "lab" + i);
+      tl.set(hot, { scaleX: 0 }, 0); tl.set(num, { color: "#ffffff" }, 0);
+      growY(tl, tile, t);
+      rise(tl, num, t + STEP);
+      slideMask(tl, lab, t + STEP + 0.15);                             // label slides out from behind the tile's edge
+      var done = t + 2 * STEP + 0.15;
+      // highlight on: marigold sweeps across the tile; the label stays where it slid to
+      var on = done + 0.05;
+      tl.fromTo(hot, { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: D * 0.8, ease: EASE() }, on);
+      tl.to(num, { color: "#13294b", duration: 0.15 }, on + 0.2);
+      if (i < ROAD.length - 1) {
+        // highlight off: marigold sweeps away to the right
+        var off = on + 1.15;
+        tl.to(hot, { scaleX: 0, transformOrigin: "100% 50%", duration: D * 0.8, ease: EASE() }, off);
+        tl.to(num, { color: "#ffffff", duration: 0.15 }, off + 0.15);
+      }
+      t += 1.0;
+    });
+  };
+  B.qSection = function (s, tl) {
+    var t = 0;
+    growY(tl, q(s, "blk"), t);
+    t += STEP; rise(tl, q(s, "n"), t);
+    t += STEP; t = swing(tl, s, q(s, "head"), t);
+    slideMask(tl, q(s, "eyebrow"), t);
+  };
+  B.qCards = function (s, tl) {
+    if (!s._built) {
+      CARDS.forEach(function (c, i) {
+        add(s, '<div class="abs q-plane" data-k="cd' + i + '" style="left:' + (150 + i * 330) + 'px;top:450px;width:300px;height:400px;overflow:hidden;color:#fff">' +
+          '<div class="q-sun" data-k="chot' + i + '" style="position:absolute;inset:0;transform:scaleX(0)"></div>' +
+          '<svg class="ico" data-icon="' + c[1] + '" data-k="ci' + i + '" style="position:absolute;left:36px;top:44px;width:112px;height:112px"></svg>' +
+          '<span class="mask" style="position:absolute;left:36px;right:24px;bottom:30px"><span data-k="cl' + i + '" style="font-size:36px;font-weight:700;line-height:1.15">' + c[0] + '</span></span></div>');
+      });
+      s._built = true;
+    }
+    var t = swing(tl, s, q(s, "head"), 0);
+    slideMask(tl, q(s, "eyebrow"), t);
+    t += STEP;
+    CARDS.forEach(function (c, i) {
+      var cd = q(s, "cd" + i), hot = q(s, "chot" + i);
+      tl.set(hot, { scaleX: 0 }, 0); tl.set(cd, { color: "#ffffff" }, 0);
+      growY(tl, cd, t);
+      var e = assemble(tl, q(s, "ci" + i), t + STEP);
+      rise(tl, q(s, "cl" + i), e);
+      var on = e + STEP;                                              // named: marigold sweeps across the card
+      tl.fromTo(hot, { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: D * 0.8, ease: EASE() }, on);
+      tl.to(cd, { color: "#13294b", duration: 0.15 }, on + 0.2);
+      if (i < CARDS.length - 1) {
+        var off = on + 1.0;
+        tl.to(hot, { scaleX: 0, transformOrigin: "100% 50%", duration: D * 0.8, ease: EASE() }, off);
+        tl.to(cd, { color: "#ffffff", duration: 0.15 }, off + 0.2);
+      }
+      t = on;
+    });
+  };
+  B.qSearch = function (s, tl) {
+    if (!s._built) {
+      RESULTS.forEach(function (r, i) {
+        var y = 560 + i * 100;
+        add(s, '<div class="abs" data-k="rl' + i + '" style="left:230px;top:' + y + 'px;width:1390px;height:1px;background:rgba(19,41,75,.2)"></div>');
+        if (i === 0) add(s, '<div class="abs q-sun" data-k="rhot" style="left:230px;top:' + (y + 1) + 'px;width:1390px;height:99px;transform:scaleX(0)"></div>');
+        add(s, '<span class="abs mask" style="left:262px;top:' + (y + 26) + 'px"><span data-k="rt' + i + '" style="font-size:40px;font-weight:600">' + r + '</span></span>');
+      });
+      addCursor(s, "#ffffff", "#13294b", "#ee7a4c");
+      s._built = true;
+    }
+    var ph = q(s, "ph"), typed = q(s, "typed"), t = 0;
+    tl.set(ph, { visibility: "visible" }, 0);
+    cursorAt(tl, s, 2000, 700);
+    growY(tl, q(s, "page"), t, "50% 0%");
+    t += STEP; growX(tl, q(s, "bar"), t);
+    t += STEP; rise(tl, q(s, "url"), t);
+    t += 0.3; rise(tl, q(s, "h"), t);
+    t += STEP; growX(tl, q(s, "field"), t);
+    t += STEP; growX(tl, q(s, "uline"), t);
+    t += STEP; t = assemble(tl, q(s, "mag"), t);
+    rise(tl, ph, t);
+    t += 0.3; growY(tl, q(s, "btn"), t);
+    t += STEP; rise(tl, q(s, "btnl"), t);
+    t += STEP; t = cursorTo(tl, s, [[760, 425]], t);                   // straight to the field
+    t = click(tl, s, 760, 425, t);
+    tl.set(ph, { visibility: "hidden" }, t - 0.2);
+    growX(tl, q(s, "ufocus"), t - 0.2);                                 // focus: marigold grows along the field's line
+    t = typeText(tl, typed, QUERY, t + 0.4);
+    t = cursorTo(tl, s, [[1470, 425]], t);
+    t = click(tl, s, 1470, 425, t);
+    RESULTS.forEach(function (r, i) { growX(tl, q(s, "rl" + i), t + i * 0.2); rise(tl, q(s, "rt" + i), t + i * 0.2 + 0.25); });
+    t += 0.4 + STEP + 0.3;
+    tl.fromTo(q(s, "rhot"), { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: D * 0.8, ease: EASE() }, t);
+  };
+  B.qDeadline = function (s, tl) {
+    var t = 0;
+    t = swing(tl, s, q(s, "head"), 0);                                // swings first, before the label above it
+    slideMask(tl, q(s, "eyebrow"), t);
+    t += STEP; growX(tl, q(s, "base"), t);
+    t += STEP;
+    for (var i = 0; i < 4; i++) {
+      growY(tl, q(s, "p" + i), t + i * 0.3);
+      assemble(tl, q(s, "c" + i), t + i * 0.3 + STEP);
+    }
+    t += 0.9 + STEP + 2 * SI; rise(tl, q(s, "earlier"), t);
+    t += STEP; growY(tl, q(s, "big"), t);                             // date block grows up from the line
+    t += STEP; rise(tl, q(s, "d1"), t);
+    t += 0.3; rise(tl, q(s, "d2"), t);
+    t += STEP; t = assemble(tl, q(s, "flag"), t);                      // pole grows, then the cloth slides out
+    slideMask(tl, q(s, "dl"), t);
+    t += 0.3; rise(tl, q(s, "final"), t);
+  };
+
+  /* ---- 2. Daylight ---- */
+  B.dTitle = function (s, tl) {
+    var t = 0;
+    slideIn(tl, s, q(s, "seal"), "top", t);
+    t += STEP; rise(tl, q(s, "l1"), t);
+    t += 0.3; rise(tl, q(s, "l2"), t);
+    t += STEP; growX(tl, q(s, "gate"), t);
+    t += STEP; slideMask(tl, q(s, "sub1"), t);
+    t += 0.35; slideMask(tl, q(s, "sub2"), t);
+  };
+  // Atkinson Hyperlegible Next is a variable font, so weight can ease smoothly from bold to regular
+  function thin(tl, el, at) { tl.to(el, { fontWeight: 400, duration: D, ease: EASE() }, at); } // same speed and easing as every other move
+  B.dRoad = function (s, tl) {
+    var pos = [];
+    if (!s._built) {
+      ROAD.forEach(function (r, i) {
+        var x = 150 + (i < 4 ? 0 : 860), y = 300 + (i % 4) * 160;
+        add(s, '<span class="abs mask disp" style="left:' + x + 'px;top:' + y + 'px;font-style:italic;font-size:64px;color:var(--d-sun)"><span data-k="num' + i + '">' + (i + 1) + '</span></span>');
+        add(s, '<span class="abs mask" style="left:' + (x + 74) + 'px;top:' + (y + 14) + 'px"><span data-k="lab' + i + '" style="font-size:40px;white-space:nowrap">' + r[0] + '</span></span>');
+        add(s, '<div class="abs hair" data-k="hr' + i + '" style="left:' + x + 'px;top:' + (y + 112) + 'px;width:760px"></div>');
+      });
+      add(s, '<div class="abs gate" data-k="mark" style="left:150px;top:411px;width:220px"></div>');
+      s._built = true;
+    }
+    ROAD.forEach(function (r, i) { pos.push({ x: (i < 4 ? 0 : 860), y: (i % 4) * 160 }); });
+    rise(tl, q(s, "title"), 0);
+    var mark = q(s, "mark"), t = 0.5;
+    tl.set(mark, { x: 0, y: 0, scaleX: 0 }, 0);
+    ROAD.forEach(function (r, i) {
+      var lab = q(s, "lab" + i);
+      tl.set(lab, { fontWeight: 700 }, 0);                             // slides out already bold
+      rise(tl, q(s, "num" + i), t);
+      slideMask(tl, lab, t + 0.25);
+      growX(tl, q(s, "hr" + i), t + 0.25 + STEP);
+      var m = t + 0.25 + STEP;
+      if (i === 0) { tl.to(mark, { scaleX: 1, duration: D, ease: EASE() }, m + 0.1); }
+      else {
+        var p = pos[i], prev = pos[i - 1];
+        thin(tl, q(s, "lab" + (i - 1)), m);
+        if (p.x !== prev.x) { // across first, then up: two separate moves
+          tl.to(mark, { x: p.x, duration: D, ease: EASE() }, m);
+          tl.to(mark, { y: p.y, duration: D, ease: EASE() }, m + STEP);
+          m += STEP;
+        } else { tl.to(mark, { y: p.y, duration: D, ease: EASE() }, m); }
+      }
+      t += 0.95 + (i === 4 ? STEP : 0); // a column change takes two moves
+    });
+  };
+  B.dCards = function (s, tl) {
+    if (!s._built) {
+      CARDS.forEach(function (c, i) {
+        var x = 150 + i * 330;
+        if (i) add(s, '<div class="abs" data-k="sep' + i + '" style="left:' + (x - 30) + 'px;top:470px;width:1px;height:430px;background:var(--d-rule)"></div>');
+        add(s, '<svg class="abs ico" data-icon="' + c[1] + '" data-k="ci' + i + '" style="left:' + x + 'px;top:500px;width:104px;height:104px;color:var(--d-sun)"></svg>');
+        add(s, '<span class="abs mask" style="left:' + x + 'px;top:650px;width:270px"><span data-k="cl' + i + '" style="font-size:40px;line-height:1.2">' + c[0] + '</span></span>');
+      });
+      add(s, '<div class="abs gate" data-k="mark" style="left:150px;top:880px;width:200px"></div>');
+      s._built = true;
+    }
+    var mark = q(s, "mark"), t = 0;
+    tl.set(mark, { x: 0, scaleX: 0 }, 0);
+    rise(tl, q(s, "head"), t);
+    t += STEP + 0.2;
+    CARDS.forEach(function (c, i) {
+      var lab = q(s, "cl" + i);
+      tl.set(lab, { fontWeight: 700 }, 0);                             // slides out already bold
+      if (i) growY(tl, q(s, "sep" + i), t, "50% 0%");
+      var e = assemble(tl, q(s, "ci" + i), t + (i ? STEP : 0));
+      slideMask(tl, lab, e);
+      var m = e + STEP;
+      if (i === 0) tl.to(mark, { scaleX: 1, duration: D, ease: EASE() }, m);
+      else { thin(tl, q(s, "cl" + (i - 1)), m); tl.to(mark, { x: i * 330, duration: D, ease: EASE() }, m); }
+      t = m + 0.2;
+    });
+  };
+  B.dSearch = function (s, tl) {
+    if (!s._built) {
+      RESULTS.forEach(function (r, i) {
+        var y = 520 + i * 110;
+        add(s, '<span class="abs mask" style="left:150px;top:' + (y + 24) + 'px"><span data-k="rt' + i + '" style="font-size:42px">' + r + '</span></span>');
+        add(s, '<div class="abs hair" data-k="rl' + i + '" style="left:150px;top:' + (y + 100) + 'px;width:1470px"></div>');
+      });
+      add(s, '<div class="abs gate" data-k="gold" style="left:150px;top:439px;width:1150px"></div>');
+      addCursor(s, "#fff7ea", "#0d1c3a", "#ffc56b");
+      s._built = true;
+    }
+    var ph = q(s, "ph"), gold = q(s, "gold"), t = 0;
+    tl.set(ph, { visibility: "visible" }, 0); tl.set(gold, { y: 0 }, 0);
+    cursorAt(tl, s, 2000, 760);
+    slideMask(tl, q(s, "url"), t);
+    t += 0.3; rise(tl, q(s, "h"), t);
+    t += STEP; growX(tl, q(s, "uline"), t);
+    t += STEP; t = assemble(tl, q(s, "mag"), t);
+    rise(tl, ph, t);
+    t += 0.3; growX(tl, q(s, "btn"), t);
+    t += STEP; rise(tl, q(s, "btnl"), t);
+    t += STEP; t = cursorTo(tl, s, [[760, 395]], t);
+    t = click(tl, s, 760, 395, t);
+    tl.set(ph, { visibility: "hidden" }, t - 0.2);
+    growX(tl, gold, t - 0.2);                                         // focus: the gold line grows along the field
+    t = typeText(tl, q(s, "typed"), QUERY, t + 0.4);
+    t = cursorTo(tl, s, [[1480, 395]], t);
+    t = click(tl, s, 1480, 395, t);
+    RESULTS.forEach(function (r, i) { rise(tl, q(s, "rt" + i), t + i * 0.25); growX(tl, q(s, "rl" + i), t + i * 0.25 + 0.2); });
+    t += 0.5 + STEP + 0.2;
+    tl.to(gold, { y: 181, duration: D, ease: EASE() }, t);              // the gold line drops to the first result
+  };
+  B.dSection = function (s, tl) {
+    var t = 0;
+    rise(tl, q(s, "n"), t);
+    t += STEP; slideMask(tl, q(s, "eyebrow"), t);
+    t += STEP; growX(tl, q(s, "gate"), t);
+    t += STEP; rise(tl, q(s, "l1"), t);
+    t += 0.3; rise(tl, q(s, "l2"), t);
+  };
+  B.dDeadline = function (s, tl) {
+    var xs = [150, 470, 790, 1110], fx = 1560, y = 760, gap = 26, sz = 72;
+    if (!s._built) {
+      xs.forEach(function (x, i) {
+        add(s, '<svg class="abs ico" data-icon="check" data-k="m' + i + '" style="left:' + x + 'px;top:' + (y - sz / 2) + 'px;width:' + sz + 'px;height:' + sz + 'px;color:var(--d-mute)"></svg>');
+      });
+      var stops = xs.concat([fx]);
+      for (var i = 0; i < stops.length - 1; i++) {
+        var a = stops[i] + sz + gap, b = stops[i + 1] - gap;
+        add(s, '<div class="abs" data-k="seg' + i + '" style="left:' + a + 'px;top:' + (y - 1) + 'px;width:' + (b - a) + 'px;height:2px;background:rgba(255,247,234,.45)"></div>');
+      }
+      // flag: the pole grows up, then the cloth slides out from behind it
+      add(s, '<svg class="abs ico" data-icon="flag" data-k="flag" style="left:' + fx + 'px;top:' + (y - 62) + 'px;width:96px;height:96px;color:var(--d-sun)"></svg>');
+      add(s, '<span class="abs mask" style="left:' + (fx - 6) + 'px;top:' + (y + 50) + 'px"><span data-k="dl" style="font-size:44px;font-weight:700;color:var(--d-sun)">Deadline</span></span>');
+      add(s, '<span class="abs mask" style="left:150px;top:' + (y + 50) + 'px"><span data-k="earlier" style="font-size:36px;color:var(--d-mute)">Earlier phases: an established program</span></span>');
+      s._built = true;
+    }
+    var t = 0;
+    slideMask(tl, q(s, "eyebrow"), t);
+    t += 0.3; rise(tl, q(s, "date"), t);
+    t += STEP; rise(tl, q(s, "final"), t);
+    t += STEP;
+    for (var j = 0; j < 4; j++) {
+      var e = assemble(tl, q(s, "m" + j), t);
+      growX(tl, q(s, "seg" + j), e);
+      t = e + 0.15;
+    }
+    t += STEP; rise(tl, q(s, "earlier"), t - STEP);
+    t = assemble(tl, q(s, "flag"), t);
+    rise(tl, q(s, "dl"), t);
+  };
+
+  /* ---- 3. Focus ---- */
+  function box(n) { return { x: n.offsetLeft, y: n.offsetTop, w: n.offsetWidth, h: n.offsetHeight }; }
+  function press(tl, s, at) {
+    var key = q(s, "key"); if (!key) return;
+    tl.to(key, { y: 6, duration: 0.08, ease: "none" }, at);
+    tl.to(key, { y: 0, duration: 0.08, ease: "none" }, at + 0.1);
+  }
+  function say(tl, s, html, at) { tl.add(function () { q(s, "say").innerHTML = html; }, at); }
+  var ARROW = "<b>▸</b> ";
+  // the highlight: first appears by growing across, then glides (move + resize together, the one allowed exception)
+  function focusOn(tl, s, item, at, prev, text) {
+    var b = box(item), loz = q(s, "loz");
+    press(tl, s, at - 0.2);
+    if (!prev) {
+      tl.set(loz, { left: b.x, top: b.y, width: b.w, height: b.h }, at);
+      tl.fromTo(loz, { scaleX: 0 }, { scaleX: 1, duration: D, ease: EASE() }, at);
+    } else {
+      tl.to(loz, { left: b.x, top: b.y, width: b.w, height: b.h, duration: 0.45, ease: EASE() }, at);
+      tl.to(prev, { color: "#1a1f36", duration: 0.15 }, at);
+    }
+    tl.to(item, { color: "#ffffff", duration: 0.15 }, at + 0.25);
+    if (text) say(tl, s, ARROW + text, at + 0.2);
+  }
+  B.fTitle = function (s, tl) {
+    var t1 = q(s, "t1"), t2 = q(s, "t2"), t3 = q(s, "t3"), t = 0;
+    tl.set([t1, t2, t3], { color: "#1a1f36" }, 0);
+    say(tl, s, "", 0);
+    slideIn(tl, s, q(s, "seal"), "right", t);
+    t += STEP; rise(tl, q(s, "t1a"), t);
+    t += 0.3; rise(tl, q(s, "t1b"), t);
+    t += 0.3; rise(tl, q(s, "t2a"), t);
+    t += 0.3; rise(tl, q(s, "t3a"), t);
+    t += STEP; slideIn(tl, s, q(s, "key"), "top", t);
+    t += STEP; growX(tl, q(s, "rule"), t);
+    t += STEP; focusOn(tl, s, t1, t, null, "heading level 1, ADA Digital Accessibility Series");
+    t += 1.0; focusOn(tl, s, t2, t, t1, "Video 1: Introduction");
+    t += 1.0; focusOn(tl, s, t3, t, t2, "For all LA County departments");
+  };
+  B.fRoad = function (s, tl) {
+    if (!s._built) {
+      ROAD.forEach(function (r, i) {
+        var x = 126 + (i < 4 ? 0 : 850), y = 270 + (i % 4) * 165;
+        add(s, '<div class="f-item" data-k="it' + i + '" style="left:' + x + 'px;top:' + y + 'px;font-size:40px;white-space:nowrap">' +
+          '<span class="mask" style="padding:0"><span data-k="row' + i + '" style="display:flex;align-items:center;gap:22px">' +
+          '<svg class="ico" data-icon="' + r[1] + '" data-k="ic' + i + '" style="width:58px;height:58px;flex:none"></svg>' +
+          '<b style="width:30px">' + (i + 1) + '</b><span>' + r[0] + '</span></span></span></div>');
+      });
+      add(s, '<div class="f-key mono" data-k="key" style="left:1600px;top:118px">Tab ⇥</div>');
+      s._built = true;
+    }
+    say(tl, s, ARROW + "list, 8 items", 0);
+    var t = 0;
+    rise(tl, q(s, "title"), t);
+    t += STEP; slideIn(tl, s, q(s, "key"), "top", t);
+    t += STEP; growX(tl, q(s, "rule"), t);
+    t += STEP;
+    var prev = null;
+    ROAD.forEach(function (r, i) {
+      var it = q(s, "it" + i);
+      tl.set(it, { color: "#1a1f36" }, 0);
+      slideMask(tl, q(s, "row" + i), t);
+      assemble(tl, q(s, "ic" + i), t + STEP);
+      focusOn(tl, s, it, t + STEP, prev, (i + 1) + " of 8, " + r[0]);
+      prev = it; t += 1.0;
+    });
+  };
+  B.fCards = function (s, tl) {
+    if (!s._built) {
+      var loz = q(s, "loz");
+      CARDS.forEach(function (c, i) {
+        add(s, '<div class="abs" data-k="cb' + i + '" style="left:' + (150 + i * 330) + 'px;top:430px;width:300px;height:400px;background:rgba(255,255,255,.8);border-radius:12px"></div>');
+      });
+      s.insertBefore(loz, null);                                       // the highlight sits above the pale fields
+      CARDS.forEach(function (c, i) {
+        add(s, '<div class="f-item" data-k="it' + i + '" style="left:' + (150 + i * 330) + 'px;top:430px;width:300px;height:400px;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between">' +
+          '<svg class="ico" data-icon="' + c[1] + '" data-k="ci' + i + '" style="width:112px;height:112px"></svg>' +
+          '<span class="mask"><span data-k="cl' + i + '" style="font-size:33px;font-weight:700;line-height:1.15">' + c[0] + '</span></span></div>');
+      });
+      add(s, '<div class="f-key mono" data-k="key" style="left:1600px;top:118px">Tab ⇥</div>');
+      s._built = true;
+    }
+    say(tl, s, "", 0);
+    var t = 0, prev = null;
+    rise(tl, q(s, "head"), t);
+    t += STEP; slideIn(tl, s, q(s, "key"), "top", t);
+    t += STEP; growX(tl, q(s, "rule"), t);
+    t += STEP;
+    CARDS.forEach(function (c, i) {
+      var it = q(s, "it" + i);
+      tl.set(it, { color: "#1a1f36" }, 0);
+      growY(tl, q(s, "cb" + i), t);
+      var e = assemble(tl, q(s, "ci" + i), t + STEP);
+      rise(tl, q(s, "cl" + i), e);
+      focusOn(tl, s, it, e + STEP, prev, "button, " + c[0] + ", " + (i + 1) + " of 5");
+      prev = it; t = e + STEP + 0.3;
+    });
+  };
+  B.fSearch = function (s, tl) {
+    if (!s._built) {
+      RESULTS.forEach(function (r, i) {
+        add(s, '<div class="f-item" data-k="r' + i + '" style="left:150px;top:' + (500 + i * 100) + 'px;font-size:40px;font-weight:600"><span class="mask"><span data-k="rr' + i + '">' + r + '</span></span></div>');
+      });
+      addCursor(s, "#1a1f36", "#ffffff", "#3249c9");
+      s._built = true;
+    }
+    var fld = q(s, "fld"), btn = q(s, "btn"), key = q(s, "key"), ph = q(s, "ph"), t = 0;
+    tl.set([fld, btn, q(s, "r0")], { color: "#1a1f36" }, 0);
+    tl.set(ph, { visibility: "visible" }, 0);
+    tl.call(function () { key.textContent = "Tab ⇥"; }, null, 0);
+    say(tl, s, "", 0);
+    cursorAt(tl, s, 2000, 720);
+    slideMask(tl, q(s, "url"), t);
+    t += 0.3; rise(tl, q(s, "h"), t);
+    t += STEP; growX(tl, q(s, "fbg"), t);
+    t += STEP; growX(tl, q(s, "bbg"), t);
+    t += STEP; t = assemble(tl, q(s, "mag"), t);
+    rise(tl, ph, t);
+    t += 0.3; rise(tl, q(s, "btnl"), t);
+    t += STEP; slideIn(tl, s, key, "top", t);
+    t += STEP; growX(tl, q(s, "rule"), t);
+    t += STEP; t = cursorTo(tl, s, [[720, 380]], t);                   // mouse: straight to the field, then click
+    t = click(tl, s, 720, 380, t);
+    focusOn(tl, s, fld, t - 0.1, null, "search, edit text, Search County services");
+    tl.set(ph, { visibility: "hidden" }, t + 0.3);
+    t = typeText(tl, q(s, "typed"), QUERY, t + 0.5);
+    say(tl, s, ARROW + "search, edit text, " + QUERY, t);
+    t += 0.5; focusOn(tl, s, btn, t, fld, "button, Search");          // keyboard: Tab to the button
+    t += 0.9; tl.call(function () { key.textContent = "Enter ⏎"; }, null, t - 0.3);
+    press(tl, s, t);
+    t += 0.3;
+    RESULTS.forEach(function (r, i) { rise(tl, q(s, "rr" + i), t + i * 0.25); });
+    say(tl, s, ARROW + "list, 3 results", t + 0.2);
+    t += 0.5 + STEP;
+    tl.call(function () { key.textContent = "Tab ⇥"; }, null, t - 0.3);
+    focusOn(tl, s, q(s, "r0"), t + 0.2, btn, "link, " + RESULTS[0] + ", 1 of 3");
+  };
+  B.fSection = function (s, tl) {
+    var t = 0;
+    say(tl, s, "", 0);
+    slideIn(tl, s, q(s, "key"), "top", t);
+    t += STEP; press(tl, s, t);
+    t += 0.25; tl.fromTo(q(s, "panel"), { x: -1960 }, { x: 0, duration: D, ease: EASE() }, t);
+    t += STEP; slideMask(tl, q(s, "eyebrow"), t);
+    t += 0.3; rise(tl, q(s, "l1"), t);
+    t += 0.3; rise(tl, q(s, "l2"), t);
+    t += STEP; growX(tl, q(s, "rule"), t);
+    say(tl, s, "region, Section 1. heading level 1, Why accessibility matters", t + 0.3);
+  };
+  B.fDeadline = function (s, tl) {
+    var xs = [150, 430, 710, 990, 1300], y = 640, sz = 80, gap = 24;
+    if (!s._built) {
+      xs.forEach(function (x, i) {
+        var last = i === xs.length - 1;
+        add(s, '<div class="f-item" data-k="st' + i + '" style="left:' + (x - 24) + 'px;top:' + (y - 14) + 'px">' +
+          '<span class="mask" style="padding:0"><span data-k="sti' + i + '" style="display:flex;flex-direction:column;align-items:flex-start;gap:12px">' +
+          '<svg class="ico" data-icon="' + (last ? "flag" : "check") + '" data-k="sic' + i + '" style="width:' + sz + 'px;height:' + sz + 'px' + (last ? ';color:var(--f-warm-b)' : '') + '"></svg>' +
+          '<span style="font-size:34px;font-weight:700;white-space:nowrap">' + (last ? "Final phase" : "Phase " + (i + 1)) + '</span></span></span></div>');
+        if (!last) {
+          var a = x + sz + gap, b = xs[i + 1] - gap;
+          add(s, '<div class="abs" data-k="seg' + i + '" style="left:' + a + 'px;top:' + (y + sz / 2 - 1) + 'px;width:' + (b - a) + 'px;height:2px;background:var(--f-line)"></div>');
+        }
+      });
+      s._built = true;
+    }
+    say(tl, s, "", 0);
+    var field = q(s, "field"), t = 0;
+    tl.set(field, { color: "#1a1f36" }, 0);
+    slideMask(tl, q(s, "eyebrow"), t);
+    t += 0.3; rise(tl, q(s, "fieldin"), t);
+    t += STEP; t = assemble(tl, q(s, "cal"), t) - SI;
+    t += STEP; growX(tl, q(s, "under"), t);
+    t += STEP; rise(tl, q(s, "final"), t);
+    t += STEP; growX(tl, q(s, "rule"), t);
+    t += STEP; focusOn(tl, s, field, t, null, "date, April 26, 2027. One County-wide completion deadline");
+    t += 1.0;
+    for (var i = 0; i < 5; i++) {
+      var st = q(s, "st" + i);
+      tl.set(st, { color: i < 4 ? "#0b7d6e" : "#1a1f36" }, 0);
+      rise(tl, q(s, "sti" + i), t);
+      var e = assemble(tl, q(s, "sic" + i), t + STEP);
+      if (i < 4) growX(tl, q(s, "seg" + i), e);
+      t = e;
+    }
+    t += 0.3; focusOn(tl, s, q(s, "st4"), t, field, "step 5 of 5, final phase of an established program");
+  };
+
+  /* ================= EXIT: every part slides off to the left, in reading order ================= */
+  function buildOut(s) {
+    var tl = gsap.timeline({ paused: true });
+    var kids = Array.prototype.filter.call(s.children, function (c) { return c.offsetWidth > 0 || c.getBBox; });
+    kids.sort(function (a, b) { var A = rect(s, a), Bb = rect(s, b); return (A.t - Bb.t) || (A.l - Bb.l); });
+    kids.forEach(function (c, i) {
+      var r = rect(s, c);
+      tl.to(c, { x: "-=" + (Math.max(r.r, 0) + 60), duration: D, ease: EASE() }, i * 0.07);
+    });
+    return tl;
+  }
+
+  /* ================= wiring ================= */
+  var state = new Map(); // stage -> { inTl, outTl }
+  function reset(stage) {
+    var st = state.get(stage);
+    if (st) {
+      if (st.outTl) { st.outTl.progress(0).kill(); }
+      if (st.inTl) { st.inTl.progress(1).kill(); }
+    }
+    gsap.set(stage.children, { x: 0 });
+  }
+  function buildIn(stage) {
+    var tl = gsap.timeline({ paused: true });
+    B[stage.getAttribute("data-build")](stage, tl);
+    state.set(stage, { inTl: tl, outTl: null });
+    return tl;
+  }
+  function playIn(stage) { if (!window.gsap) return; reset(stage); buildIn(stage).play(0); }
+  function rest(stage) { if (!window.gsap) return; reset(stage); buildIn(stage).progress(1); }
+  function playOut(stage) {
+    if (!window.gsap) return;
+    reset(stage);
+    var inTl = buildIn(stage); inTl.progress(1);
+    var out = buildOut(stage);
+    state.get(stage).outTl = out;
+    out.play(0);
+  }
+
+  if (window.gsap) {
+    document.querySelectorAll("[data-build]").forEach(rest); // every frame starts complete
+    if (!REDUCED && "IntersectionObserver" in window) {
+      var seen = new WeakSet();
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          var s = e.target.firstElementChild;
+          if (e.isIntersecting && !seen.has(s) && !e.target.closest("[hidden]")) { seen.add(s); playIn(s); }
+        });
+      }, { threshold: 0.6 });
+      document.querySelectorAll(".frame").forEach(function (f) { io.observe(f); });
+    }
+  }
+  document.querySelectorAll(".btns button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var s = b.closest("figure").querySelector("[data-build]");
+      if (b.getAttribute("data-act") === "out") playOut(s); else playIn(s);
+    });
+  });
+
+  document.querySelectorAll("[data-replay]").forEach(function (b) {
+    b.addEventListener("click", function () { playRow(b.closest("div").querySelector("[data-icons]"), REDUCED); });
+  });
+
+  /* ---------- timing switch ---------- */
+  var current = "quarter";
+  function playPanel(id) {
+    document.querySelectorAll("#p-" + id + " .frame").forEach(function (f) {
+      fit(f); var s = f.firstElementChild;
+      if (REDUCED) rest(s); else playIn(s);
+    });
+    document.querySelectorAll("#p-" + id + " [data-icons]").forEach(function (r) { playRow(r, REDUCED); });
+  }
+  ["expo", "linear"].forEach(function (n) {
+    document.getElementById("ease-" + n).addEventListener("click", function () {
+      easeName = n;
+      document.getElementById("ease-expo").setAttribute("aria-pressed", n === "expo" ? "true" : "false");
+      document.getElementById("ease-linear").setAttribute("aria-pressed", n === "linear" ? "true" : "false");
+      playPanel(current);
+    });
+  });
+
+  /* ---------- tabs (#quarter / #daylight / #focus) ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(id, push) {
+    current = id;
+    tabs.forEach(function (t) {
+      var on = t.id === "tab-" + id;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+    playPanel(id);
+    if (push) { try { history.replaceState(null, "", "#" + id); } catch (e) {} }
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { select(t.id.slice(4), true); });
+    t.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      var n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); n.click();
+    });
+  });
+  function fromHash() {
+    var h = (location.hash || "").slice(1);
+    if (["quarter", "daylight", "focus"].indexOf(h) >= 0) select(h, false);
+  }
+  window.addEventListener("hashchange", fromHash);
+  fromHash();
+})();
+</script>
