@@ -523,9 +523,7 @@ figcaption .cap-text span { color: var(--muted); }
 (function () {
   "use strict";
   var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var EASES = { expo: "expo.inOut", linear: "none" };
-  var easeName = "expo";
-  function EASE() { return EASES[easeName]; }
+  function EASE() { return "expo.inOut"; } // exaggerated easing for every move
   var D = 0.5; // one move, seconds (style guide: under 0.6 s)
 
   /* ---------- scale every 1920x1080 stage to its frame ---------- */
@@ -1251,7 +1249,7 @@ figcaption .cap-text span { color: var(--muted); }
     b.addEventListener("click", function () { playRow(b.closest("div").querySelector("[data-icons]"), REDUCED); });
   });
 
-  /* ---------- timing switch ---------- */
+  /* ---------- play a panel ---------- */
   var current = "quarter";
   function playPanel(id) {
     document.querySelectorAll("#p-" + id + " .frame").forEach(function (f) {
@@ -1260,14 +1258,6 @@ figcaption .cap-text span { color: var(--muted); }
     });
     document.querySelectorAll("#p-" + id + " [data-icons]").forEach(function (r) { playRow(r, REDUCED); });
   }
-  ["expo", "linear"].forEach(function (n) {
-    document.getElementById("ease-" + n).addEventListener("click", function () {
-      easeName = n;
-      document.getElementById("ease-expo").setAttribute("aria-pressed", n === "expo" ? "true" : "false");
-      document.getElementById("ease-linear").setAttribute("aria-pressed", n === "linear" ? "true" : "false");
-      playPanel(current);
-    });
-  });
 
   /* ---------- tabs (#quarter / #daylight / #focus) ---------- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
